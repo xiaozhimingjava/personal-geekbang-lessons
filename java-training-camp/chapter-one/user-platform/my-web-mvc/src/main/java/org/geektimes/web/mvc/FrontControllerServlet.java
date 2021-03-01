@@ -68,9 +68,9 @@ public class FrontControllerServlet extends HttpServlet {
                     requestPath = pathFromClass.value() + pathFromMethod.value();
                     handleMethodInfoMapping.put(requestPath,
                             new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
+                    controllersMapping.put(requestPath, controller);
                 }
             }
-            controllersMapping.put(requestPath, controller);
         }
     }
 
@@ -131,12 +131,12 @@ public class FrontControllerServlet extends HttpServlet {
                         return;
                     }
 
-                    //Method handlerMethod = handlerMethodInfo.getHandlerMethod();
+                    Method handlerMethod = handlerMethodInfo.getHandlerMethod();
                     if (controller instanceof PageController) {
                         PageController pageController = PageController.class.cast(controller);
-                        String viewPath = pageController.execute(request, response);
+                        //String viewPath = pageController.execute(request, response);
                         // 修改成反射的形式，支持多个方法
-                        //String viewPath = (String) handlerMethod.invoke(pageController, request, response);
+                        String viewPath = (String) handlerMethod.invoke(pageController, request, response);
                         // 页面请求 forward
                         // request -> RequestDispatcher forward
                         // RequestDispatcher requestDispatcher = request.getRequestDispatcher(viewPath);

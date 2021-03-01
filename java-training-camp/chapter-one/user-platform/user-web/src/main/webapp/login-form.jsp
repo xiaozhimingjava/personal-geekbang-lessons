@@ -20,13 +20,13 @@
 </head>
 <body>
 	<div class="container">
-		<form class="form-signin">
+		<form class="form-signin" action="/register" method="post">
 			<h1 class="h3 mb-3 font-weight-normal">登录</h1>
 			<label for="inputEmail" class="sr-only">请输出电子邮件</label> <input
-				type="email" id="inputEmail" class="form-control"
+				type="email" id="inputEmail" class="form-control" name="email"
 				placeholder="请输入电子邮件" required autofocus> <label
 				for="inputPassword" class="sr-only">Password</label> <input
-				type="password" id="inputPassword" class="form-control"
+				type="password" id="inputPassword" class="form-control" name="password"
 				placeholder="请输入密码" required>
 			<div class="checkbox mb-3">
 				<label> <input type="checkbox" value="remember-me">

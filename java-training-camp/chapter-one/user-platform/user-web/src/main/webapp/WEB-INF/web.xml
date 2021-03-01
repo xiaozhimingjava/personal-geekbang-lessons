@@ -39,6 +39,8 @@
     <servlet-mapping>
         <servlet-name>FrontControllerServlet</servlet-name>
         <url-pattern>/</url-pattern>
+        <url-pattern>/register</url-pattern>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
     <filter>

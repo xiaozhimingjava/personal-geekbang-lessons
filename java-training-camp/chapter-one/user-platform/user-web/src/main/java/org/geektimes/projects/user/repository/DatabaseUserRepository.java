@@ -49,7 +49,10 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean save(User user) {
-        return false;
+        return executeInsert("INSERT INTO users (id,name,password,email,phoneNumber) values(?,?,?,?,?)",
+                result -> {
+                    return result;
+                }, COMMON_EXCEPTION_HANDLER, user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber());
     }
 
     @Override
@@ -137,6 +140,40 @@ public class DatabaseUserRepository implements UserRepository {
             // 返回一个 POJO List -> ResultSet -> POJO List
             // ResultSet -> T
             return function.apply(resultSet);
+        } catch (Throwable e) {
+            exceptionHandler.accept(e);
+        }
+        return null;
+    }
+
+    /**
+     * @param sql
+     * @param function
+     * @param <T>
+     * @return
+     */
+    protected <T> T executeInsert(String sql, ThrowableFunction<Boolean, T> function,
+                                  Consumer<Throwable> exceptionHandler, Object... args) {
+        Connection connection = getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                Class argType = arg.getClass();
+
+                Class wrapperType = wrapperToPrimitive(argType);
+
+                if (wrapperType == null) {
+                    wrapperType = argType;
+                }
+
+                // Boolean -> boolean
+                String methodName = preparedStatementMethodMappings.get(argType);
+                Method method = PreparedStatement.class.getMethod(methodName, wrapperType);
+                method.invoke(preparedStatement, i + 1, args);
+            }
+            boolean execute = preparedStatement.execute();
+            return function.apply(execute);
         } catch (Throwable e) {
             exceptionHandler.accept(e);
         }

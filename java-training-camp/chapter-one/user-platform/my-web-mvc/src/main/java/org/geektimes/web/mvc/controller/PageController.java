@@ -17,5 +17,5 @@ public interface PageController extends Controller {
      * @throws Throwable 异常发生时
      * 修改成反射的模式，支持多个方法，这时候充当标记接口
      */
-    String execute(HttpServletRequest request, HttpServletResponse response) throws Throwable;
+    //String execute(HttpServletRequest request, HttpServletResponse response) throws Throwable;
 }
