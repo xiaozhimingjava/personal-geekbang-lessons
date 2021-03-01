@@ -36,11 +36,15 @@ public class UserController implements PageController {
     @Path("/register")
     public String register(HttpServletRequest request, HttpServletResponse response) throws Throwable {
         System.out.println("====进行注册====");
+        String name = request.getParameter("name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String phoneNumber = request.getParameter("phoneNumber");
         User user = new User();
+        user.setName("yuancome");
         user.setEmail(email);
         user.setPassword(password);
+        user.setPhoneNumber("13546789646");
 
         boolean resutl = userService.register(user);
         if (resutl) {

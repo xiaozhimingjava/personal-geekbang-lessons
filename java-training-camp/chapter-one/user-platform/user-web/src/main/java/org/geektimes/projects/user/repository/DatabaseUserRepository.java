@@ -9,8 +9,10 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,10 +51,10 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean save(User user) {
-        return executeInsert("INSERT INTO users (id,name,password,email,phoneNumber) values(?,?,?,?,?)",
+        return executeInsert("INSERT INTO users (name,password,email,phoneNumber) values(?,?,?,?)",
                 result -> {
                     return result;
-                }, COMMON_EXCEPTION_HANDLER, user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber());
+                }, COMMON_EXCEPTION_HANDLER, user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber());
     }
 
     @Override
@@ -133,8 +135,8 @@ public class DatabaseUserRepository implements UserRepository {
 
                 // Boolean -> boolean
                 String methodName = preparedStatementMethodMappings.get(argType);
-                Method method = PreparedStatement.class.getMethod(methodName, wrapperType);
-                method.invoke(preparedStatement, i + 1, args);
+                Method method = PreparedStatement.class.getMethod(methodName, int.class, wrapperType);
+                method.invoke(preparedStatement, i + 1, arg);
             }
             ResultSet resultSet = preparedStatement.executeQuery();
             // 返回一个 POJO List -> ResultSet -> POJO List
@@ -159,6 +161,11 @@ public class DatabaseUserRepository implements UserRepository {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             for (int i = 0; i < args.length; i++) {
                 Object arg = args[i];
+                if (null == arg) {
+                    Method method = PreparedStatement.class.getMethod("setNull", int.class, int.class);
+                    method.invoke(preparedStatement, i + 1, Types.VARCHAR);
+                    continue;
+                }
                 Class argType = arg.getClass();
 
                 Class wrapperType = wrapperToPrimitive(argType);
@@ -169,12 +176,14 @@ public class DatabaseUserRepository implements UserRepository {
 
                 // Boolean -> boolean
                 String methodName = preparedStatementMethodMappings.get(argType);
-                Method method = PreparedStatement.class.getMethod(methodName, wrapperType);
-                method.invoke(preparedStatement, i + 1, args);
+                Method method = PreparedStatement.class.getMethod(methodName, int.class, wrapperType);
+                method.invoke(preparedStatement, i + 1, wrapperType.cast(arg));
             }
-            boolean execute = preparedStatement.execute();
-            return function.apply(execute);
+            int execute = preparedStatement.executeUpdate();
+
+            return function.apply(execute > 0);
         } catch (Throwable e) {
+            e.printStackTrace();
             exceptionHandler.accept(e);
         }
         return null;
