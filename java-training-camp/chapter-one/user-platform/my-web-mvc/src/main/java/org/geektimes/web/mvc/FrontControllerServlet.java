@@ -4,25 +4,24 @@ import org.apache.commons.lang.StringUtils;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
-import org.geektimes.web.mvc.header.CacheControlHeaderWriter;
-import org.geektimes.web.mvc.header.annotation.CacheControl;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.substringAfter;
@@ -44,6 +43,7 @@ public class FrontControllerServlet extends HttpServlet {
      *
      * @param servletConfig
      */
+    @Override
     public void init(ServletConfig servletConfig) {
         initHandleMethods();
     }
@@ -56,17 +56,19 @@ public class FrontControllerServlet extends HttpServlet {
         for (Controller controller : ServiceLoader.load(Controller.class)) {
             Class<?> controllerClass = controller.getClass();
             Path pathFromClass = controllerClass.getAnnotation(Path.class);
-            String requestPath = pathFromClass.value();
+            // 不直接赋值 pathFromClass.value() 是因为下面的循环会不断 append 导致路径不正确
+            String requestPath = "";
             Method[] publicMethods = controllerClass.getMethods();
             // 处理方法支持的 HTTP 方法集合
             for (Method method : publicMethods) {
                 Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
                 Path pathFromMethod = method.getAnnotation(Path.class);
                 if (pathFromMethod != null) {
-                    requestPath += pathFromMethod.value();
+                    // 此时重新赋值不会导致路径拼接错误
+                    requestPath = pathFromClass.value() + pathFromMethod.value();
+                    handleMethodInfoMapping.put(requestPath,
+                            new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
                 }
-                handleMethodInfoMapping.put(requestPath,
-                        new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
             }
             controllersMapping.put(requestPath, controller);
         }
@@ -119,23 +121,22 @@ public class FrontControllerServlet extends HttpServlet {
         Controller controller = controllersMapping.get(requestMappingPath);
 
         if (controller != null) {
-
             HandlerMethodInfo handlerMethodInfo = handleMethodInfoMapping.get(requestMappingPath);
-
             try {
                 if (handlerMethodInfo != null) {
-
                     String httpMethod = request.getMethod();
-
                     if (!handlerMethodInfo.getSupportedHttpMethods().contains(httpMethod)) {
                         // HTTP 方法不支持
                         response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                         return;
                     }
 
+                    //Method handlerMethod = handlerMethodInfo.getHandlerMethod();
                     if (controller instanceof PageController) {
                         PageController pageController = PageController.class.cast(controller);
                         String viewPath = pageController.execute(request, response);
+                        // 修改成反射的形式，支持多个方法
+                        //String viewPath = (String) handlerMethod.invoke(pageController, request, response);
                         // 页面请求 forward
                         // request -> RequestDispatcher forward
                         // RequestDispatcher requestDispatcher = request.getRequestDispatcher(viewPath);
