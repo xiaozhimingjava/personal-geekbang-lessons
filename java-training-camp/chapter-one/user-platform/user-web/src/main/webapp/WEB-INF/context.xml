@@ -6,6 +6,8 @@
               maxActive="100" maxIdle="30" maxWait="10000"
               username="" password="" 
               driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-              url="jdbc:derby:Databases/UserPlatformDB"/>
+              url="jdbc:derby:E:/db/user-platform"/>
+	<!--url="jdbc:derby:jdbc:derby:/Users/yuancome/personal-geekbang-lessons/user-platform"/>-->
+
 
 </Context>

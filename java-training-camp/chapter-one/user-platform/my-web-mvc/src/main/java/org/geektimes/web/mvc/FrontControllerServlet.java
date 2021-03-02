@@ -89,10 +89,11 @@ public class FrontControllerServlet extends HttpServlet {
             }
         }
 
-        if (supportedHttpMethods.isEmpty()) {
-            supportedHttpMethods.addAll(asList(HttpMethod.GET, HttpMethod.POST,
-                    HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.HEAD, HttpMethod.OPTIONS));
-        }
+        // 如果不注释，Controller 的方法可以通过任何的 HTTP 请求方式访问
+        //if (supportedHttpMethods.isEmpty()) {
+        //    supportedHttpMethods.addAll(asList(HttpMethod.GET, HttpMethod.POST,
+        //            HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.HEAD, HttpMethod.OPTIONS));
+        //}
 
         return supportedHttpMethods;
     }
