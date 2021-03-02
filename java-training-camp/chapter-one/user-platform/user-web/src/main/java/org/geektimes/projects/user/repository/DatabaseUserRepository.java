@@ -9,7 +9,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
@@ -47,6 +46,10 @@ public class DatabaseUserRepository implements UserRepository {
 
     private Connection getConnection() {
         return dbConnectionManager.getConnection();
+    }
+
+    private void releaseConnection() {
+        dbConnectionManager.releaseConnection();
     }
 
     @Override
@@ -105,6 +108,7 @@ public class DatabaseUserRepository implements UserRepository {
                     // 以 id 为例，  user.setId(resultSet.getLong("id"));
                     setterMethodFromUser.invoke(user, resultValue);
                 }
+                users.add(user);
             }
             return users;
         }, e -> {
@@ -139,6 +143,8 @@ public class DatabaseUserRepository implements UserRepository {
                 method.invoke(preparedStatement, i + 1, arg);
             }
             ResultSet resultSet = preparedStatement.executeQuery();
+            // 返回前释放数据库连接
+            //releaseConnection();
             // 返回一个 POJO List -> ResultSet -> POJO List
             // ResultSet -> T
             return function.apply(resultSet);
@@ -180,7 +186,8 @@ public class DatabaseUserRepository implements UserRepository {
                 method.invoke(preparedStatement, i + 1, wrapperType.cast(arg));
             }
             int execute = preparedStatement.executeUpdate();
-
+            // 返回前释放数据库连接
+            releaseConnection();
             return function.apply(execute > 0);
         } catch (Throwable e) {
             e.printStackTrace();

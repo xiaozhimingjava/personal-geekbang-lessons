@@ -6,6 +6,8 @@ import org.geektimes.projects.user.repository.UserRepository;
 import org.geektimes.projects.user.service.UserService;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
+import java.util.Collection;
+
 /**
  * @author tanheyuan
  * @version 1.0
@@ -18,6 +20,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean register(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public Collection<User> queryAllUser() {
+        return userRepository.getAll();
     }
 
     @Override

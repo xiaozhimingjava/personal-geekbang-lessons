@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import java.util.Collection;
 
 /**
  * @author tanheyuan
@@ -51,5 +52,14 @@ public class UserController implements PageController {
             return "success.jsp";
         }
         return "failed.jsp";
+    }
+
+    @GET
+    @Path("/user/list")
+    public String list(HttpServletRequest request, HttpServletResponse response) throws Throwable {
+        System.out.println("====查询所有用户====");
+        Collection<User> users = userService.queryAllUser();
+        System.out.println(users);
+        return "index.jsp";
     }
 }
