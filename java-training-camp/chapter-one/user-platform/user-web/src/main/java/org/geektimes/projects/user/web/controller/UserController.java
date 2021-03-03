@@ -62,4 +62,12 @@ public class UserController implements PageController {
         System.out.println(users);
         return "index.jsp";
     }
+
+    @GET
+    @Path("/user/init")
+    public String init(HttpServletRequest request, HttpServletResponse response) throws Throwable {
+        System.out.println("====初始化 User 数据表====");
+        userService.initUserTable();
+        return "index.jsp";
+    }
 }

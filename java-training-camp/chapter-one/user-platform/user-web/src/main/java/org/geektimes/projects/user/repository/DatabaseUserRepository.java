@@ -1,25 +1,15 @@
 package org.geektimes.projects.user.repository;
 
-import org.apache.commons.lang.StringUtils;
-import org.geektimes.function.ThrowableFunction;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 import org.geektimes.projects.user.sql.JdbcTemplate;
 
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.apache.commons.lang.ClassUtils.wrapperToPrimitive;
 
 public class DatabaseUserRepository implements UserRepository {
 
@@ -85,5 +75,10 @@ public class DatabaseUserRepository implements UserRepository {
             }
             return users;
         }, COMMON_EXCEPTION_HANDLER);
+    }
+
+    @Override
+    public void initTable() {
+        jdbcTemplate.initTable();
     }
 }

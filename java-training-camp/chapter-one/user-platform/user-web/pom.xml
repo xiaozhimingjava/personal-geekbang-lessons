@@ -50,8 +50,9 @@
                 <version>2.1</version>
                 <configuration>
                     <mode>context</mode>
-                    <contextFile>${project.build.directory}/${project.build.finalName}/WEB-INF/context.xml</contextFile>
-                    <defaultContextFile>${project.build.directory}/${project.build.finalName}/WEB-INF/context.xml</defaultContextFile>
+                    <contextFile>src/main/webapp/WEB-INF/context.xml</contextFile>
+                    <contextReloadable>true</contextReloadable>
+                    <!--<defaultContextFile>${project.build.directory}/${project.build.finalName}/WEB-INF/context.xml</defaultContextFile>-->
                     <!--开启和使用 JNDI 方式-->
                     <enableNaming>true</enableNaming>
                     <useNaming>true</useNaming>

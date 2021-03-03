@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
@@ -223,5 +225,16 @@ public class JdbcTemplate {
             exceptionHandler.accept(e);
         }
         return null;
+    }
+
+    public void initTable() {
+        Connection connection = getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute(DBConnectionManager.CREATE_USERS_TABLE_DDL_SQL);
+            statement.execute(DBConnectionManager.INSERT_USER_DML_SQL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

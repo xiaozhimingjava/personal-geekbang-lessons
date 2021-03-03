@@ -4,9 +4,9 @@
               type="javax.sql.DataSource"  auth="Container"
               description="Derby database for User Platform"
               maxActive="100" maxIdle="30" maxWait="10000"
-              username="" password="" 
+              username="" password=""
               driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-              url="jdbc:derby:user-platform"/>
+              url="jdbc:derby:db/user-platform;create=true"/>
               <!--url="jdbc:derby:E:/db/user-platform"/>-->
 
 

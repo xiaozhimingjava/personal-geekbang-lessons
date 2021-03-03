@@ -51,4 +51,9 @@ public class InMemoryUserRepository implements UserRepository {
     public Collection<User> getAll() {
         return repository.values();
     }
+
+    @Override
+    public void initTable() {
+
+    }
 }

@@ -46,4 +46,9 @@ public class UserServiceImpl implements UserService {
     public User queryUserByNameAndPassword(String name, String password) {
         return null;
     }
+
+    @Override
+    public void initUserTable(){
+        userRepository.initTable();
+    }
 }
