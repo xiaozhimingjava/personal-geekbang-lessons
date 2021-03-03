@@ -48,6 +48,14 @@
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.1</version>
+                <configuration>
+                    <mode>context</mode>
+                    <contextFile>${project.build.directory}/${project.build.finalName}/WEB-INF/context.xml</contextFile>
+                    <defaultContextFile>${project.build.directory}/${project.build.finalName}/WEB-INF/context.xml</defaultContextFile>
+                    <!--开启和使用 JNDI 方式-->
+                    <enableNaming>true</enableNaming>
+                    <useNaming>true</useNaming>
+                </configuration>
                 <executions>
                     <execution>
                         <id>tomcat-run</id>

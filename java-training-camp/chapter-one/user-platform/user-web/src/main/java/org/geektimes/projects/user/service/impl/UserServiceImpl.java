@@ -15,7 +15,7 @@ import java.util.Collection;
  */
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository = new DatabaseUserRepository(new DBConnectionManager());
+    private final UserRepository userRepository = new DatabaseUserRepository();
 
     @Override
     public boolean register(User user) {
